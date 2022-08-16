@@ -324,6 +324,9 @@ class _number(Tape._no_truth):
     def popcnt_bits(bits):
         return sum(bits)
 
+    def zero_if_not(self, condition):
+        return condition * self
+
 class _int(Tape._no_truth):
     """ Integer functionality. """
 
@@ -2821,7 +2824,9 @@ class sintbit(sint):
         elif util.is_zero(other):
             return self
         elif util.is_one(other):
-            return 1
+            res = sintbit()
+            submr(res, cint(1), self)
+            return res
         else:
             return NotImplemented
 
@@ -5329,7 +5334,7 @@ class Array(_vectorizable):
         :param condition: 0/1 (regint/cint/int)
         :param index: regint/cint/int
         """
-        return condition * self[condition * index]
+        return self[condition * index].zero_if_not(condition)
 
     def maybe_set(self, condition, index, value):
         """ Change entry if condition is true.
